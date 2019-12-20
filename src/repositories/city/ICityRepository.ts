@@ -1,5 +1,0 @@
-export interface ICityRepository {
-
-  getAll();
-
-}
