@@ -1,4 +1,4 @@
-import { ConnectionFactory } from './connectionFactory';
+import { ConnectionFactory } from './ConnectionFactory';
 
 export class Repository {
 

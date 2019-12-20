@@ -1,5 +1,5 @@
-import { Model } from '@models/model';
-import { entity, pk, column, fk } from '@models/meta';
+import { Model } from '@models/Model';
+import { entity, pk, column, fk } from '@models/Meta';
 import { State } from '@models/state/State';
 
 @entity()

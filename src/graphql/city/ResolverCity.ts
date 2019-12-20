@@ -1,5 +1,5 @@
-import { Resolver, model, query, mutation } from '../resolver';
-import { RepositoryEnum } from '@repositories/repositoryEnum';
+import { Resolver, model, query, mutation } from '../Resolver';
+import { RepositoryEnum } from '@repositories/RepositoryEnum';
 import { ICityRepository } from '@repositories/city/ICityRepository';
 import { City } from '@models/city/City';
 
@@ -12,6 +12,12 @@ export class ResolverCity extends Resolver<ICityRepository> {
 
   @query('olaamigo')
   async getAll() {
+    return await this.repository.getAll();
+  }
+
+  @query('testeamigo')
+  async getAllParam(hm, teste) {
+    console.log(hm, teste);
     return await this.repository.getAll();
   }
 

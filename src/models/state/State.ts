@@ -1,5 +1,5 @@
-import { Model } from '@models/model';
-import { entity, pk, column } from '@models/meta';
+import { Model } from '@models/Model';
+import { entity, pk, column } from '@models/Meta';
 
 @entity()
 export class State extends Model {

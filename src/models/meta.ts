@@ -25,10 +25,9 @@ export function entity(name?: string) {
  */
 export function pk(name?: string) {
   return (target : any, key : string) : any => {
-    const type = Reflect.getMetadata('design:type', target, key);
     Reflect.defineMetadata(PK, true, target, key);
     Reflect.defineMetadata(COLUMN, name ? name : key, target, key);
-    Reflect.defineMetadata(GRAPHQL_TYPE, graphQLgetType(type.name), target, key);
+    Reflect.defineMetadata(GRAPHQL_TYPE, getGraphQLType(target, key), target, key);
   }
 }
 
@@ -39,9 +38,8 @@ export function pk(name?: string) {
  */
 export function column(name?: string) {
   return (target : any, key : string) : any => {
-    const type = Reflect.getMetadata('design:type', target, key);
     Reflect.defineMetadata(COLUMN, name ? name : key, target, key);
-    Reflect.defineMetadata(GRAPHQL_TYPE, graphQLgetType(type.name), target, key);
+    Reflect.defineMetadata(GRAPHQL_TYPE, getGraphQLType(target, key), target, key);
   }
 }
 
@@ -71,6 +69,12 @@ export function fk(classType: any, name?: string) {
 }
 
 /************************************************* GRAPHQL */
+
+export function getGraphQLType(target, arg) {
+  const type = Reflect.getMetadata('design:type', target, arg);
+  const argType = type ? type.name : 'string';
+  return graphQLgetType(argType);
+}
 
 /**
  * get graphQL object type.

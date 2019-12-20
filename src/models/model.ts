@@ -1,4 +1,4 @@
-import { ORM } from '@models/orm';
+import { ORM } from '@models/ORM';
 
 export class Model extends ORM {
 

@@ -1,6 +1,6 @@
-import { ENTITY, PK, COLUMN, column } from '@models/meta';
-import { Repository } from '@repositories/repository';
-import { DateUtil } from '@utils/dateUtil';
+import { ENTITY, PK, COLUMN, column } from '@models/Meta';
+import { Repository } from '@repositories/Repository';
+import { DateUtil } from '@utils/DateUtil';
 
 export class ORM extends Repository {
 

@@ -1,4 +1,4 @@
-import { Repository } from '../repository';
+import { Repository } from '../Repository';
 import { IUserRepository } from './iUserRepository';
 
 const SELECT_ALL_QUERY = 'SELECT * FROM Usuario';

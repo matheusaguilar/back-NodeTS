@@ -1,4 +1,4 @@
-import { Repository } from '../repository';
+import { Repository } from '../Repository';
 import { ICityRepository } from './ICityRepository';
 
 const SELECT_ALL_QUERY = 'SELECT * FROM City';

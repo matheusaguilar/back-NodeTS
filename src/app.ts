@@ -6,80 +6,18 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import { ExceptionUtil } from '@utils/exceptionUtil';
+import { ExceptionUtil } from '@utils/ExceptionUtil';
 
 import graphqlHTTP from 'express-graphql';
+import { Schema } from '@graphql/Schema';
 
-import { User } from '@models/user/User';
-import { ResolverUser } from '@graphql/user/resolverUser';
-import { getGraphQLModel } from '@models/meta';
-
-import { State } from '@models/state/State';
-import { City } from '@models/city/City';
-import { ResolverCity } from '@graphql/city/ResolverCity';
-import { Schema } from '@graphql/schema';
-
-// const state = new State();
-// state.name = 'Paraná';
-// state.initials = 'PR';
-// state.create().then(created => console.log(created));
-
-// const city = new City();
-// city.name = 'Londrina';
-// city.stateId = 1;
-// city.create().then(resp => console.log(resp));
-
-// const c = new City();
-// const t = getGraphQLModel(c);
-
-// console.log(t);
-
-// const tes = new ResolverCity();
-
-const schema = new Schema();
-// console.log(schema.schema);
-
-// const x = new User();
-// console.log(getGraphQLModel(x));
-// x.email = 'matcatarinoteste3@yahoo.com.br';
-// x.senha = 'M123456789';
-// x.nome = 'Matheus';
-// x.sobrenome = 'Teste';
-// x.dataNascimento = new Date().toISOString().slice(0, 19).replace('T', ' ');
-// x.dataCadastro = new Date().toISOString().slice(0, 19).replace('T', ' ');
-// x.sexo = 'M';
-// x.tipoConta = 'C';
-
-// x.id = 10;
-// x.update({ nome: 'Matheus Alterado' , sobrenome: 'Aguilar' }).then((resp) => {
-//   console.log(resp);
-//   console.log(x);
-// });
-
-// x.id = 7;
-// x.delete().then((resp) => {
-//   console.log(resp);
-// })
-
-// x.id = 7;
-// x.read().then((readed) => {
-//   if (readed) {
-//     console.log(x);
-//     console.log(x.dataCadastro as any instanceof Date);
-//   } else {
-//     console.log('null');
-//   }
-// });
-
-// x.create().then((created) => {
-//   if (created) {
-
-//   }
-// });
-
-// const y = new User();
-// y.email = 'emailemail@email.com';
-// y.create();
+/**
+ * Handle uncaughtException and end application.
+ */
+process.on('uncaughtException', (err: Error) => {
+  ExceptionUtil.handle('UncaughtException', err);
+  process.exit(1);
+});
 
 /**
 *
@@ -140,22 +78,14 @@ app.get('/', (req, res) => {
   res.send('The sedulous hyena ate the antelope!');
 });
 
-app.use('/graphql', graphqlHTTP({
-  schema: schema.schema,
-  graphiql: true
-}));
-
 /**
- * Handle uncaughtException and end application.
- */
-process.on('uncaughtException', (err: Error) => {
-  ExceptionUtil.handle('UncaughtException', err);
-  process.exit(1);
+*
+* GraphQL
+*
+*/
+new Schema().buildSchema().then((graphqlSchema) => {
+  app.use('/graphql', graphqlHTTP({
+    schema: graphqlSchema,
+    graphiql: true
+  }));
 });
-
-// const userRepo = new ResolverUser();
-// userRepo.getAll().then(() => {
-//   console.log('cabo');
-// }).catch((error) => {
-//   console.log(error);
-// })

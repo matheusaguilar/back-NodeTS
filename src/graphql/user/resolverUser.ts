@@ -1,5 +1,5 @@
-import { Resolver, query, mutation } from '../resolver';
-import { RepositoryEnum } from '@repositories/repositoryEnum';
+import { Resolver, query, mutation } from '../Resolver';
+import { RepositoryEnum } from '@repositories/RepositoryEnum';
 import { IUserRepository } from '@repositories/user/iUserRepository';
 
 export class ResolverUser extends Resolver<IUserRepository> {

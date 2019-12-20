@@ -1,6 +1,6 @@
 import * as graphqlTypes from 'graphql';
-import { GRAPHQL_MODEL, GRAPHQL_QUERY, GRAPHQL_MUTATION } from '@graphql/resolver';
-import { getGraphQLModel } from '@models/meta';
+import { GRAPHQL_MODEL, GRAPHQL_QUERY, GRAPHQL_MUTATION } from '@graphql/Resolver';
+import { getGraphQLModel } from '@models/Meta';
 import { ResolverCity } from '@graphql/city/ResolverCity';
 
 const resolvers = [
@@ -10,60 +10,106 @@ const resolvers = [
 export class Schema {
 
   private resolverInstances = [];
-  public schema = null;
 
   constructor() {
     // create resolver instances
     for (const resolver of resolvers) {
       this.resolverInstances.push(new resolver());
     }
+  }
 
-    // create graphQL object for every resolver with query and mutation types
-    const queryFields = {};
-    for (const instance of this.resolverInstances) {
-      if (Reflect.hasMetadata(GRAPHQL_MODEL, instance)) {
-        const model = Reflect.getMetadata(GRAPHQL_MODEL, instance);
-        const modelType = getGraphQLModel(new model());
+  /**
+   * build and return the GraphQLSchema
+   */
+  buildSchema(): Promise<graphqlTypes.GraphQLSchema> {
+    return new Promise((resolve) => {
+      const queryFields = {};
+      const mutationFields = {};
+      const queryPromises = [];
+      const mutationPromises = [];
 
-        for (const method of Object.getOwnPropertyNames(Object.getPrototypeOf(instance))) {
-          // queries
-          if (Reflect.hasMetadata(GRAPHQL_QUERY, instance, method)) {
-            const queryName = Reflect.getMetadata(GRAPHQL_QUERY, instance, method)
-            queryFields[queryName] = {};
-            queryFields[queryName].type = new graphqlTypes.GraphQLList(modelType);
-            queryFields[queryName].resolve = () => {
-              return instance[method]();
-            };
-          }
+      // create graphQL object for every resolver with query and mutation types
+      for (const resolver of this.resolverInstances) {
+        if (Reflect.hasMetadata(GRAPHQL_MODEL, resolver)) {
+          const model = Reflect.getMetadata(GRAPHQL_MODEL, resolver);
+          const modelType = getGraphQLModel(new model());
 
-          // mutations
+          queryPromises.push(this.createQueries(resolver, modelType));
         }
       }
 
-      // console.log(queryFields);
-      // for (const method of Object.getOwnPropertyNames(Object.getPrototypeOf(instance))) {
-      //   console.log(method);
-      // }
-      // console.log(Reflect.ownKeys(instance));
-      // console.log(instance);
-      // for (const field in instance) {
-      //   console.log(field);
-      // }
+      // fetch all query promises
+      Promise.all(queryPromises).then((queries) => {
+        for (const query of queries) {
+          Object.assign(queryFields, query);
+        }
+
+        const query = new graphqlTypes.GraphQLObjectType({
+          name: 'Query',
+          fields: queryFields
+        });
+
+        resolve(new graphqlTypes.GraphQLSchema({
+          query
+        }));
+
+      });
+    });
+  }
+
+  /**
+   * create queries for every resolver.
+   * @param resolver the resolver.
+   * @param modelType the modelType of resolver.
+   */
+  private async createQueries(resolver, modelType) {
+    const queryFields = {};
+
+    for (const method of Object.getOwnPropertyNames(Object.getPrototypeOf(resolver))) {
+      if (Reflect.hasMetadata(GRAPHQL_QUERY, resolver, method)) {
+        const queryName = Reflect.getMetadata(GRAPHQL_QUERY, resolver, method)
+        const hasArgs = resolver[method].length > 0;
+        const argNames = this.getFunctionArgsNames(resolver[method]);
+        queryFields[queryName] = {};
+        queryFields[queryName].type = new graphqlTypes.GraphQLList(modelType);
+
+        queryFields[queryName].resolve = (_, args) => { // resolve
+          if (hasArgs) {
+            const argsAsArray = [];
+            for (const arg of Object.keys(args)) {
+              argsAsArray.push(args[arg]);
+            }
+            return resolver[method].apply(resolver, argsAsArray);
+          }
+          return resolver[method]();
+        };
+
+        if (hasArgs) { // add args params
+          queryFields[queryName].args = {};
+          for (const arg of argNames) {
+            queryFields[queryName].args[arg] = {
+              type: graphqlTypes.GraphQLString
+            }
+          }
+        }
+      }
     }
 
-    const query = new graphqlTypes.GraphQLObjectType({
-      name: 'Query',
-      fields: queryFields
-    });
+    return queryFields;
+  }
 
-    this.schema = new graphqlTypes.GraphQLSchema({
-      query
-    });
-
-  //   getAllCidades: {
-  //     type: new GraphQLList(type),
-  //     resolve: resolverCidadeGetAll
-  // }
+  /**
+   * return function parameters names.
+   * @param func the function to look.
+   */
+  private getFunctionArgsNames(func) {
+    return `${func}`
+      .replace(/[/][/].*$/mg, '') // strip single-line comments
+      .replace(/\s+/g, '') // strip white space
+      .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
+      .split('){', 1)[0].replace(/^[^(]*[(]/, '') // extract the parameters
+      .replace(/=[^,]+/g, '') // strip any ES6 defaults
+      .split(',').filter(Boolean); // split & filter [""]
   }
 
 }

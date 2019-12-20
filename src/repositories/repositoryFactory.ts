@@ -1,5 +1,5 @@
-import { RepositoryEnum } from './repositoryEnum';
-import { UserRepository } from './user/userRepository';
+import { RepositoryEnum } from './RepositoryEnum';
+import { UserRepository } from './user/UserRepository';
 import { CityRepository } from './city/CityRepository';
 
 export class RepositoryFactory {

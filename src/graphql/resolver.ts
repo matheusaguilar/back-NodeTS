@@ -1,6 +1,6 @@
-import { RepositoryEnum } from '@repositories/repositoryEnum';
-import { RepositoryFactory } from '@repositories/repositoryFactory';
-import { Model } from '@models/model';
+import { RepositoryEnum } from '@repositories/RepositoryEnum';
+import { RepositoryFactory } from '@repositories/RepositoryFactory';
+import { Model } from '@models/Model';
 
 export const GRAPHQL_MODEL = 'graphql_model';
 export const GRAPHQL_QUERY = 'graphql_operation';
