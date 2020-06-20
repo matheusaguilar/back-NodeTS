@@ -1,21 +1,12 @@
 import * as mysql from 'mysql';
 
-// Prod
-// const configHost = {
-//   connectionLimit : 10,
-//   host: 'ofestero.mysql.uhserver.com',
-//   user: 'aguilar',
-//   password: 'm@270195',
-//   database: 'ofestero'
-// }
-
 // Dev
 const configHost = {
   connectionLimit : 10,
-  host: 'remotemysql.com',
-  user: 'LD3zDzwkC4',
-  password: 'mnWuRqnITu',
-  database: 'LD3zDzwkC4'
+  host: 'host',
+  user: 'user',
+  password: 'password',
+  database: 'database'
 }
 
 export class ConnectionFactory {
